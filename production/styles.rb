@@ -8,7 +8,7 @@ main {
   padding 20
 }
 
-email_form {
+form {
   rounded_corner_radius "10"
   padding "25"
 	background_color "#DDDDDD"
@@ -16,13 +16,11 @@ email_form {
   gradient :on
   gradient_penetration "100%"
   border_width 1
-  border_color "333333"
+  border_color "#000"
+  bottom_margin 12
 }
 
 row {
   width "100%"
   bottom_padding 7
-}
-email_form_label {
-  width "100"
 }
