@@ -54,8 +54,9 @@ describe EmailSender do
   it "should send mail" do
     @email_sender.body.stub!(:text).and_return("Good day, sir! I am a Nigerian prince with money to give you.")
     @email_sender.to_addresses.stub!(:text).and_return("eric@meyer.com, colin@jones.com")
+    @email_sender.subject.stub!(:text).and_return("some subject")
     
-    @mailer.should_receive(:send_mail).with("Good day, sir! I am a Nigerian prince with money to give you.", "eric@meyer.com, colin@jones.com")
+    @mailer.should_receive(:send_mail).with({:body => "Good day, sir! I am a Nigerian prince with money to give you.", :recipients => "eric@meyer.com, colin@jones.com", :subject => "some subject"})
     
     @email_sender.button_pressed(@event)
   end

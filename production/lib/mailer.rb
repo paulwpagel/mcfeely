@@ -8,9 +8,14 @@ class Mailer
     @password = options[:password]
   end
   
-  def send_mail(body, recipients)
+  def send_mail(options)
     Net::SMTP.start(@address, @port, @domain, @user_name, @password, :login) do |smtp|
-      smtp.send_message(body, @user_name, recipients.split(",").map{|r| r.strip})
+      message =<<END  
+To: #{options[:recipients]}
+Subject: #{options[:subject]}
+#{options[:body]}
+END
+      smtp.send_message(message, @user_name, options[:recipients].split(",").map{|r| r.strip})
     end
   end
 end
