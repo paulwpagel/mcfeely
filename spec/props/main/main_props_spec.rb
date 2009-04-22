@@ -8,4 +8,17 @@ describe "main props" do
     prop = scene.find('to_addresses')
     prop.should_not be_nil
   end
+  
+  it "should have an input for the subject" do
+    scene.find("subject").should_not be_nil
+  end
+  
+  it "should have an input for the body" do
+    scene.find("body").should_not be_nil
+  end
+  
+  it "should have a way to send the email" do
+    prop = scene.find("email_sender")
+    prop.players.should include("email_sender")
+  end
 end
