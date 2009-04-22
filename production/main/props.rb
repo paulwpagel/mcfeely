@@ -1,4 +1,5 @@
 main {
+  label :text => "McFeely Mailer", :font_size => 36, :font_style => :bold, :text_color => "#f0f0f0"
   __install "main/smtp_settings_props.rb"
   form {
     row {

@@ -17,7 +17,8 @@ form {
   gradient_penetration "100%"
   border_width 1
   border_color "#000"
-  bottom_margin 12
+  bottom_margin 6
+  top_margin 6
 }
 
 row {

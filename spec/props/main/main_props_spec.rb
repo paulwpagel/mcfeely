@@ -20,5 +20,6 @@ describe "main props" do
   it "should have a way to send the email" do
     prop = scene.find("email_sender")
     prop.players.should include("email_sender")
+    prop.name.should == "button"
   end
 end
