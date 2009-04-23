@@ -22,4 +22,14 @@ describe "main props" do
     prop.players.should include("email_sender")
     prop.name.should == "button"
   end
+  
+  it "should have a way to add another token" do
+    prop = scene.find("add_token")
+    prop.players.should include("add_token")
+    prop.name.should == "button"
+  end
+  
+  it "should group the tokens together" do
+    scene.find("token_group").should_not be_nil
+  end
 end

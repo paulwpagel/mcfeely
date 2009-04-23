@@ -28,7 +28,10 @@ row {
   width "100%"
   bottom_padding 7
 }
-
+token {
+  width "100%"
+  bottom_padding 7
+}
 title {
   font_size 36
   font_style :bold

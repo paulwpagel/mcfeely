@@ -9,6 +9,7 @@ describe EmailSender do
     @event = nil
     @mailer = mock("mailer", :send_mail => nil)
     Mailer.stub!(:new).and_return(@mailer)
+    @email_sender.token_group.stub!(:children).and_return([])
   end
   
   it "should create a mailer with an address" do
@@ -52,12 +53,38 @@ describe EmailSender do
   end
   
   it "should send mail" do
-    @email_sender.body.stub!(:text).and_return("Good day, sir! I am a Nigerian prince with money to give you.")
     @email_sender.to_addresses.stub!(:text).and_return("eric@meyer.com, colin@jones.com")
+    @email_sender.body.stub!(:text).and_return("some body")
     @email_sender.subject.stub!(:text).and_return("some subject")
     
-    @mailer.should_receive(:send_mail).with({:body => "Good day, sir! I am a Nigerian prince with money to give you.", :recipients => "eric@meyer.com, colin@jones.com", :subject => "some subject"})
+    @mailer.should_receive(:send_mail).with(hash_including({:recipients => "eric@meyer.com, colin@jones.com", :subject => "some subject", :body => "some body"}))
     
     @email_sender.button_pressed(@event)
+  end
+  
+  it "should convert one token" do
+    @email_sender.body.stub!(:text).and_return("some body with %token%")
+    tokens = [token("name", "value")]
+    @email_sender.token_group.stub!(:children).and_return(tokens)
+    
+    @mailer.should_receive(:send_mail).with(hash_including({:tokens => {"name" => ["value"]}}))
+    
+    @email_sender.button_pressed(@event)
+  end
+
+  it "should convert a second token" do
+    @email_sender.body.stub!(:text).and_return("some body with %token%")
+    tokens = [token("name", "value"), token("name two", "value one, value two")]
+    @email_sender.token_group.stub!(:children).and_return(tokens)
+    
+    @mailer.should_receive(:send_mail).with(hash_including({:tokens => {"name" => ["value"], "name two" => ["value one", "value two"]}}))
+    
+    @email_sender.button_pressed(@event)
+  end
+
+  def token(name, values)
+    token_name = mock("prop", :text => name)
+    token_values = mock("prop", :text => values)
+    return mock("token", :children => [token_name, token_values])
   end
 end

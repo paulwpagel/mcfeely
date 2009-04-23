@@ -10,12 +10,21 @@ class Mailer
   
   def send_mail(options)
     Net::SMTP.start(@address, @port, @domain, @user_name, @password, :login) do |smtp|
-      message =<<END  
-To: #{options[:recipients]}
+      options[:recipients].split(",").map{|r|r.strip}.each_with_index do |recipient, index|
+        message =<<END
+To: #{recipient}
 Subject: #{options[:subject]}
-#{options[:body]}
+#{replace_tokens(options[:tokens], options[:body], index)}
 END
-      smtp.send_message(message, @user_name, options[:recipients].split(",").map{|r| r.strip})
+        smtp.send_message(message, @user_name, [recipient])
+      end
     end
   end
+  
+  def replace_tokens(token_hash, body, index)
+    new_body = body.to_s
+    token_hash.each_pair { |name, values| new_body = new_body.gsub(/token_#{name}/, values[index]) }
+    return new_body
+  end
+    
 end

@@ -17,13 +17,14 @@ describe Mailer do
   it "should send the mail to one address" do
     @smtp.should_receive(:send_message).with(anything(), "user_name", ["em@il.com"])
     
-    @mailer.send_mail({:body => "content", :recipients => "em@il.com", :subject => "subject"})
+    @mailer.send_mail({:body => "content", :recipients => "em@il.com", :subject => "subject", :tokens => {}})
   end
   
-  it "should send the mail to multiple addresses" do
-    @smtp.should_receive(:send_message).with(anything(), "user_name", ["one@place.com", "two@place.com"])
+  it "should send one mail per recipient" do
+    @smtp.should_receive(:send_message).with(anything(), anything(), ["one@place.com"])
+    @smtp.should_receive(:send_message).with(anything(), anything(), ["two@place.com"])
     
-    @mailer.send_mail({:body => "content", :recipients => "one@place.com, two@place.com", :subject => "subject"})
+    @mailer.send_mail({:body => nil, :recipients => "one@place.com, two@place.com", :subject => nil, :tokens => {}})
   end
   
   it "should build up the message for sending" do
@@ -34,21 +35,28 @@ Body
 END
     @smtp.should_receive(:send_message).with(message, anything(), anything())
     
-    @mailer.send_mail({:body => "Body", :recipients => "em@il.com", :subject => "Some Subject"})
+    @mailer.send_mail({:body => "Body", :recipients => "em@il.com", :subject => "Some Subject", :tokens => {}})
+  end
+  
+  it "should replace one token" do
+    new_body = @mailer.replace_tokens({"name" => ["value"]}, "some token_name text token_name again", 0)
+    new_body.should == "some value text value again"
+  end
+
+  it "should replace two tokens" do
+    new_body = @mailer.replace_tokens({"first" => ["value one", "value two"], "other" => ["different one", "different two"]},
+                                                                                      "some token_first token_other token_first again", 1)
+    new_body.should == "some value two different two value two again"
+  end
+  
+  it "should send the replaced body" do
+    message = <<END
+To: em@il.com
+Subject: Some Subject
+Body value
+END
+    @smtp.should_receive(:send_message).with(message, anything(), anything())
+
+    @mailer.send_mail({:body => "Body token_name", :recipients => "em@il.com", :subject => "Some Subject", :tokens => {"name" => ["value"]}})
   end
 end
-
-
-# describe "real" do
-#   it "should work" do
-#     @mailer = Mailer.new({:address => "smtp.emailsrvr.com", :port => 587, :domain => "softwarecraftsmanship.com", :user_name => "jobs@softwarecraftsmanship.com", :password => "someonesgottadoit"})
-#     
-#     message_string =<<EOF
-# To: emeyer@8thlight.com
-# Subject: This is a real test
-# Here is the body text itself...
-# EOF
-#     
-#     @mailer.send_mail(message_string, "emeyer@8thlight.com")
-#   end
-# end
